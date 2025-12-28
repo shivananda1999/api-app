@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fastapi-config
+  namespace: fastapi-streaming
+data:
+  API_KEY: "dev-api-key-12345-change-in-production"
+  ENVIRONMENT: "production"
+  LOG_LEVEL: "INFO"
+

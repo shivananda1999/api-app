@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-streaming
+  namespace: fastapi-streaming
+  labels:
+    app: fastapi-streaming
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fastapi-streaming
+  template:
+    metadata:
+      labels:
+        app: fastapi-streaming
+    spec:
+      containers:
+      - name: fastapi
+        image: 277741777561.dkr.ecr.us-east-1.amazonaws.com/fastapi-streaming:v1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: API_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: fastapi-config
+              key: API_KEY
+        - name: ENVIRONMENT
+          valueFrom:
+            configMapKeyRef:
+              name: fastapi-config
+              key: ENVIRONMENT
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+      # For GPU support, uncomment below and use GPU node group
+      # nodeSelector:
+      #   accelerator: nvidia-tesla-t4
+      # resources:
+      #   limits:
+      #     nvidia.com/gpu: 1
+
